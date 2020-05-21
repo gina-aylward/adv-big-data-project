@@ -1,6 +1,6 @@
 # properties-dataflow
 
-Tiny example for querying a BigQuery table and sending enrichment requests to Google Places API.
+Tiny example for querying a BigQuery table and sending enrichment requests to Google Places API. External data is landed in raw JSON form to the specified `output` table in BigQuery for further processing later on. The URL from the _source_ table was used as an identifier in the output table so that it can be joined.
 
 ## Running it
 

@@ -27,22 +27,21 @@ def enrich_from_api(gmaps_client, row):
         'data': json.dumps(result)
     }
 
-def run(argv=None):
+def run(argv=None):                            
     parser = argparse.ArgumentParser()
-
     parser.add_argument('--gmaps_key', dest='gmaps_key', required=True,
                         help='Google Places API key')
-
     parser.add_argument('--output', dest='output', required=True,
                         help='Output BQ table to write results to.')
-
     known_args, pipeline_args = parser.parse_known_args(argv)
 
+    # Create Google Maps client      
     gmaps_client = googlemaps.Client(queries_per_second=QUERIES_PER_SECOND, key=known_args.gmaps_key)
 
+    # Create pipeline
     p = beam.Pipeline(options=PipelineOptions(pipeline_args))
 
-    # This is the query you run on your property data.
+    # Source data to map over from BigQuery using this SQL.
     read_query = """
     SELECT
         url as id, latitude, longitude
@@ -50,8 +49,10 @@ def run(argv=None):
     WHERE longitude IS NOT NULL and latitude IS NOT NULL
     LIMIT 2
     """
-
+   
+    # Specify schema of output table
     output_schema = 'id:STRING, data:STRING'
+
     # Pipeline to run the query, extract fields and query the API for each row. Finally write the results to BQ.
     (p
         | 'Read from BigQuery' >> beam.io.Read(beam.io.BigQuerySource(query=read_query, use_standard_sql=True))
@@ -67,4 +68,3 @@ def run(argv=None):
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     run()
-

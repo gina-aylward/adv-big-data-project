@@ -20,7 +20,7 @@ def enrich_from_api(gmaps_client, row):
     # https://googlemaps.github.io/google-maps-services-python/docs/index.html#googlemaps.Client.places
     # Note that this will only fetch the first page of results. See page_token to paginate.
     print(row)
-    result = gmaps_client.places(query="restaurant", location=f"{row['latitude']},{row['longitude']}")
+    result = gmaps_client.places(query="restaurant", radius=RADIUS, location=f"{row['latitude']},{row['longitude']}")
     print(result)
     return {
         'id': row['id'],

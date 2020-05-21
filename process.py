@@ -21,7 +21,10 @@ def enrich_from_api(gmaps_client, row):
     print(row)
     result = gmaps_client.places(query="restaurant", location=f"{row['latitude']},{row['longitude']}")
     print(result)
-    return result
+    return {
+        'url': row['url'],
+        'data': result
+    }
 
 def run(argv=None):
     parser = argparse.ArgumentParser()
@@ -47,15 +50,16 @@ def run(argv=None):
     LIMIT 2
     """
 
+    output_schema = 'id:STRING, data:STRING'
     # Pipeline to run the query, extract fields and query the API for each row. Finally write the results to BQ.
     (p
         | 'Read from BigQuery' >> beam.io.Read(beam.io.BigQuerySource(query=read_query, use_standard_sql=True))
         | 'Query Google Places API' >> beam.Map(lambda r: enrich_from_api(gmaps_client, r)))
-#        | 'Write to BigQuery' >> beam.io.Write(beam.io.BigQuerySink(
-#                known_args.output,
-#                schema=None,
-#                create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-#                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE)))
+        | 'Write to BigQuery' >> beam.io.Write(beam.io.BigQuerySink(
+                known_args.output,
+                schema=None,
+                create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE)))
 
     p.run().wait_until_finish()
 

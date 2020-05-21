@@ -1,5 +1,6 @@
 import argparse
 import csv
+import json
 import logging
 import time
 import os
@@ -22,8 +23,8 @@ def enrich_from_api(gmaps_client, row):
     result = gmaps_client.places(query="restaurant", location=f"{row['latitude']},{row['longitude']}")
     print(result)
     return {
-        'url': row['url'],
-        'data': result
+        'id': row['id'],
+        'data': json.dumps(result)
     }
 
 def run(argv=None):
@@ -45,7 +46,7 @@ def run(argv=None):
     read_query = """
     SELECT
         url as id, latitude, longitude
-    FROM `stream-test-246208.properties.bypostcode`
+    FROM `changethis.properties.bypostcode`
     WHERE longitude IS NOT NULL and latitude IS NOT NULL
     LIMIT 2
     """
@@ -54,12 +55,12 @@ def run(argv=None):
     # Pipeline to run the query, extract fields and query the API for each row. Finally write the results to BQ.
     (p
         | 'Read from BigQuery' >> beam.io.Read(beam.io.BigQuerySource(query=read_query, use_standard_sql=True))
-        | 'Query Google Places API' >> beam.Map(lambda r: enrich_from_api(gmaps_client, r)))
-        | 'Write to BigQuery' >> beam.io.Write(beam.io.BigQuerySink(
+        | 'Query Google Places API' >> beam.Map(lambda r: enrich_from_api(gmaps_client, r))
+        | 'Write to BigQuery' >> bigquery.WriteToBigQuery(
                 known_args.output,
-                schema=None,
+                schema=output_schema,
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE)))
+                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE))
 
     p.run().wait_until_finish()
 

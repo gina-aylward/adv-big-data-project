@@ -18,9 +18,26 @@ pip install requirements.txt
 To run locally (replacing the values in <>, i.e. `--output test_project:mydata:output`)
 
 ```
-python process.py --output <your project>:<your dataset>.<output_table_name> --project <your project> --gmaps_key <your API key>
+python process.py \
+  --output <your project>:<your dataset>.<output_table_name> \
+  --project <your project> \
+  --gmaps_key <your API key>
 ```
-Note that the _local_ Apache Beam runner is only suitable for testing a very small number of records. When ready to execute it on Cloud Dataflow, [follow this guide](https://cloud.google.com/dataflow/docs/quickstarts/quickstart-python#run-wordcount-on-the-dataflow-service). (Long story short, specify `--runner DataflowRunner`).
+Note that the _local_ Apache Beam runner is only suitable for testing a very small number of records. 
+
+When ready to execute it on Cloud Dataflow, [follow this guide](https://cloud.google.com/dataflow/docs/quickstarts/quickstart-python#run-wordcount-on-the-dataflow-service).
+
+```
+python process.py \
+  --output <your project>:<your dataset>.<output_table_name> \
+  --project <your project> \
+  --gmaps_key <your API key> \
+  --runner DataflowRunner \
+  --project $PROJECT \
+  --temp_location gs://<your temp bucket>/dataflow/
+```
+
+This will provision several VMs to perform this batch job. You can monitor process by following the URL that appears in the terminal after issuing the above command.
 
 ## But first
 

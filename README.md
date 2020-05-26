@@ -7,12 +7,11 @@ Tiny example for querying a BigQuery table and sending enrichment requests to Go
 In Cloud Shell:
 
 ```
-git clone git@github.com:AlexJReid/properties-dataflow.git
 cd properties-dataflow
 virtualenv -p python3.7 venv
 source venv/bin/activate
 
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 To run locally (replacing the values in <>, i.e. `--output test_project:mydata:output`)

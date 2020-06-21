@@ -45,7 +45,7 @@ def run(argv=None):
     read_query = """
     SELECT
         url as id, latitude, longitude
-    FROM `project.dataset.property_data_table`
+    FROM `big-data-project-276711.dataproject.property_data`
     WHERE longitude IS NOT NULL and latitude IS NOT NULL
     LIMIT 2
     """

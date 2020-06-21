@@ -45,7 +45,7 @@ def run(argv=None):
     read_query = """
     SELECT
         url as id, latitude, longitude
-    FROM `changethis.properties.bypostcode`
+    FROM `project.dataset.property_data_table`
     WHERE longitude IS NOT NULL and latitude IS NOT NULL
     LIMIT 2
     """

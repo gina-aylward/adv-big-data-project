@@ -52,4 +52,4 @@ rsa==4.0
 six==1.14.0
 typing-extensions==3.7.4.2
 uritemplate==3.0.1
-urllib3==1.25.9
+urllib3==1.26.5
